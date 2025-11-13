@@ -1,0 +1,121 @@
+/* ============================================
+   STATS CARD - TARJETAS DE MÉTRICAS
+   ============================================ */
+
+.stats-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card.primary {
+  border-left-color: #f22121;
+}
+
+.stats-card.success {
+  border-left-color: #28a745;
+}
+
+.stats-card.info {
+  border-left-color: #17a2b8;
+}
+
+.stats-card.warning {
+  border-left-color: #ffc107;
+}
+
+/* ============================================
+   CONTENIDO
+   ============================================ */
+
+.stats-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stats-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.stats-card-title {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-card-icon {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.stats-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000;
+  line-height: 1;
+}
+
+/* ============================================
+   TENDENCIA
+   ============================================ */
+
+.stats-card-trend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.stats-card-trend.up {
+  color: #28a745;
+}
+
+.stats-card-trend.down {
+  color: #dc3545;
+}
+
+.trend-icon {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.trend-value {
+  font-weight: 600;
+}
+
+.trend-label {
+  color: #999;
+  font-weight: 400;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .stats-card {
+    padding: 1.25rem;
+  }
+
+  .stats-card-value {
+    font-size: 1.75rem;
+  }
+
+  .stats-card-icon {
+    font-size: 1.75rem;
+  }
+}
