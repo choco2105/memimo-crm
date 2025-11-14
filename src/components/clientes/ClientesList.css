@@ -271,6 +271,7 @@
 .btn-icon-table:hover {
   background: #f22121;
   transform: scale(1.1);
+  color: white;
 }
 
 .btn-icon-table.danger:hover {

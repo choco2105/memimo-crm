@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
-import { obtenerClientes, buscarClientes } from '../../lib/supabase'
+import { obtenerClientes } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
+import ClienteModal from './ClienteModal'
 import './ClientesList.css'
 
 const ClientesList = () => {
@@ -7,6 +9,8 @@ const ClientesList = () => {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredClientes, setFilteredClientes] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null)
 
   useEffect(() => {
     cargarClientes()
@@ -44,6 +48,41 @@ const ClientesList = () => {
     setFilteredClientes(resultados)
   }
 
+  const handleNuevoCliente = () => {
+    setClienteSeleccionado(null)
+    setIsModalOpen(true)
+  }
+
+  const handleEditarCliente = (cliente) => {
+    setClienteSeleccionado(cliente)
+    setIsModalOpen(true)
+  }
+
+  const handleEliminarCliente = async (cliente) => {
+    if (!window.confirm(`¿Estás seguro de eliminar a ${cliente.nombres} ${cliente.apellidos}?`)) {
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('clientes')
+        .delete()
+        .eq('id', cliente.id)
+
+      if (error) throw error
+
+      // Actualizar la lista
+      cargarClientes()
+    } catch (error) {
+      console.error('Error al eliminar cliente:', error)
+      alert('Error al eliminar el cliente. Puede tener compras asociadas.')
+    }
+  }
+
+  const handleModalSuccess = () => {
+    cargarClientes()
+  }
+
   const formatFecha = (fecha) => {
     if (!fecha) return 'Sin fecha'
     return new Date(fecha).toLocaleDateString('es-PE', {
@@ -70,7 +109,7 @@ const ClientesList = () => {
           <h1 className="page-title">Clientes</h1>
           <span className="page-count">{filteredClientes.length} clientes</span>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={handleNuevoCliente}>
           <span className="btn-icon">➕</span>
           Nuevo Cliente
         </button>
@@ -97,11 +136,7 @@ const ClientesList = () => {
           )}
         </div>
         <div className="toolbar-actions">
-          <button className="btn-outline">
-            <span>📊</span>
-            Exportar
-          </button>
-          <button className="btn-outline">
+          <button className="btn-outline" onClick={cargarClientes}>
             <span>🔄</span>
             Actualizar
           </button>
@@ -144,13 +179,18 @@ const ClientesList = () => {
                   <td>{formatFecha(cliente.fecha_registro)}</td>
                   <td>
                     <div className="table-actions">
-                      <button className="btn-icon-table" title="Ver perfil">
-                        👁️
-                      </button>
-                      <button className="btn-icon-table" title="Editar">
+                      <button
+                        className="btn-icon-table"
+                        title="Editar"
+                        onClick={() => handleEditarCliente(cliente)}
+                      >
                         ✏️
                       </button>
-                      <button className="btn-icon-table danger" title="Eliminar">
+                      <button
+                        className="btn-icon-table danger"
+                        title="Eliminar"
+                        onClick={() => handleEliminarCliente(cliente)}
+                      >
                         🗑️
                       </button>
                     </div>
@@ -170,12 +210,20 @@ const ClientesList = () => {
               : 'Aún no hay clientes registrados'}
           </p>
           {!searchTerm && (
-            <button className="btn-primary">
+            <button className="btn-primary" onClick={handleNuevoCliente}>
               Agregar Primer Cliente
             </button>
           )}
         </div>
       )}
+
+      {/* Modal para crear/editar cliente */}
+      <ClienteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        cliente={clienteSeleccionado}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   )
 }

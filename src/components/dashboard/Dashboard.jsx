@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   obtenerClientes, 
   obtenerProductos, 
@@ -8,6 +9,7 @@ import StatsCard from './StatsCard'
 import './Dashboard.css'
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalClientes: 0,
@@ -60,6 +62,25 @@ const Dashboard = () => {
       console.error('Error al cargar datos del dashboard:', error)
       setLoading(false)
     }
+  }
+
+  // ACCIONES RÁPIDAS - Ahora funcionales
+  const handleNuevaVenta = () => {
+    // Por ahora navega a clientes (puedes crear una página de ventas después)
+    navigate('/clientes')
+    alert('Módulo de Ventas próximamente. Por ahora puedes gestionar clientes.')
+  }
+
+  const handleNuevoCliente = () => {
+    navigate('/clientes')
+  }
+
+  const handleNuevoProducto = () => {
+    navigate('/productos')
+  }
+
+  const handleNuevaCampana = () => {
+    alert('Módulo de Campañas próximamente.')
   }
 
   if (loading) {
@@ -144,7 +165,9 @@ const Dashboard = () => {
         <div className="section-card">
           <div className="section-header">
             <h2 className="section-title">🍦 Productos Más Vendidos</h2>
-            <button className="btn-outline">Ver todos</button>
+            <button className="btn-outline" onClick={() => navigate('/productos')}>
+              Ver todos
+            </button>
           </div>
           <div className="products-list">
             {productosTop.length > 0 ? (
@@ -173,7 +196,9 @@ const Dashboard = () => {
         <div className="section-card">
           <div className="section-header">
             <h2 className="section-title">👥 Clientes Recientes</h2>
-            <button className="btn-outline">Ver todos</button>
+            <button className="btn-outline" onClick={() => navigate('/clientes')}>
+              Ver todos
+            </button>
           </div>
           <div className="clients-list">
             {clientesRecientes.length > 0 ? (
@@ -188,7 +213,11 @@ const Dashboard = () => {
                     </div>
                     <div className="client-contact">{cliente.celular}</div>
                   </div>
-                  <button className="btn-icon" title="Ver perfil">
+                  <button 
+                    className="btn-icon" 
+                    title="Ver perfil"
+                    onClick={() => navigate('/clientes')}
+                  >
                     →
                   </button>
                 </div>
@@ -202,23 +231,23 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Acciones Rápidas */}
+      {/* Acciones Rápidas - AHORA FUNCIONALES */}
       <div className="dashboard-actions">
         <h2 className="section-title">⚡ Acciones Rápidas</h2>
         <div className="actions-grid">
-          <button className="action-button primary">
+          <button className="action-button primary" onClick={handleNuevaVenta}>
             <span className="action-icon">➕</span>
             <span className="action-label">Nueva Venta</span>
           </button>
-          <button className="action-button success">
+          <button className="action-button success" onClick={handleNuevoCliente}>
             <span className="action-icon">👤</span>
             <span className="action-label">Nuevo Cliente</span>
           </button>
-          <button className="action-button info">
+          <button className="action-button info" onClick={handleNuevoProducto}>
             <span className="action-icon">🍦</span>
             <span className="action-label">Nuevo Producto</span>
           </button>
-          <button className="action-button warning">
+          <button className="action-button warning" onClick={handleNuevaCampana}>
             <span className="action-icon">📢</span>
             <span className="action-label">Nueva Campaña</span>
           </button>

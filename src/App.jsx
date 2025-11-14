@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MainLayout from './components/layout/MainLayout'
 import Dashboard from './components/dashboard/Dashboard'
+import ClientesList from './components/clientes/ClientesList'
+import ProductosList from './components/productos/ProductosList'
+import Reportes from './components/reportes/Reportes'
 import TestConexion from './components/TestConexion'
 import './App.css'
 
@@ -9,29 +12,31 @@ import './App.css'
  * Configura las rutas y el layout
  */
 function App() {
-  // Para probar el dashboard, cambia showTest a false
-  const showTest = false
-
-  if (showTest) {
-    return (
-      <div className="App">
-        <TestConexion />
-      </div>
-    )
-  }
-
   return (
     <BrowserRouter>
       <Routes>
-        {/* Ruta principal con Dashboard */}
+        {/* Layout principal */}
         <Route path="/" element={<MainLayout title="Dashboard" subtitle="Bienvenido a Memimo CRM" />}>
           <Route index element={<Dashboard />} />
         </Route>
 
-        {/* Test de conexión (ruta separada) */}
-        <Route path="/test" element={<TestConexion />} />
+        {/* Clientes */}
+        <Route path="/clientes" element={<MainLayout title="Clientes" subtitle="Gestión de clientes" />}>
+          <Route index element={<ClientesList />} />
+        </Route>
 
-        {/* Más rutas se agregarán aquí */}
+        {/* Productos */}
+        <Route path="/productos" element={<MainLayout title="Productos" subtitle="Catálogo de productos" />}>
+          <Route index element={<ProductosList />} />
+        </Route>
+
+        {/* Reportes */}
+        <Route path="/reportes" element={<MainLayout title="Reportes" subtitle="Análisis y estadísticas" />}>
+          <Route index element={<Reportes />} />
+        </Route>
+
+        {/* Test de conexión */}
+        <Route path="/test" element={<TestConexion />} />
       </Routes>
     </BrowserRouter>
   )
