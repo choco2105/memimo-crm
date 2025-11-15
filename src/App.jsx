@@ -5,7 +5,7 @@ import ClientesList from './components/clientes/ClientesList'
 import ProductosList from './components/productos/ProductosList'
 import ComprasList from './components/compras/ComprasList'
 import CampanasList from './components/campanas/CampanasList'
-import Reportes from './components/reportes/Reportes'
+import Reportes from './components/reportes/reportes'
 import TestConexion from './components/TestConexion'
 import './App.css'
 
