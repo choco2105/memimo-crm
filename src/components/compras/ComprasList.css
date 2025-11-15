@@ -1,0 +1,259 @@
+/* ============================================
+   COMPRAS/VENTAS PAGE - MEMIMO CRM
+   ============================================ */
+
+.compras-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.compras-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+/* ============================================
+   TOOLBAR
+   ============================================ */
+
+.compras-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  gap: 1rem;
+}
+
+.filtros-ventas {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filtro-btn {
+  padding: 0.75rem 1.5rem;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.filtro-btn:hover {
+  background: #fff0f0;
+  color: #f22121;
+}
+
+.filtro-btn.active {
+  background: #f22121;
+  color: white;
+  border-color: #f22121;
+}
+
+.total-periodo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.total-periodo span {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.total-periodo strong {
+  font-size: 1.5rem;
+  color: #f22121;
+}
+
+/* ============================================
+   LISTA DE COMPRAS
+   ============================================ */
+
+.compras-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.compra-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border-left: 4px solid #f22121;
+}
+
+.compra-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Header de la compra */
+.compra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.compra-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.compra-cliente {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
+
+.compra-fecha {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.compra-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.total-label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.total-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f22121;
+}
+
+/* Detalles */
+.compra-detalles {
+  margin-bottom: 1rem;
+}
+
+.compra-detalles h4 {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0 0 0.75rem 0;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.productos-compra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.producto-detalle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+.producto-cantidad {
+  font-weight: 700;
+  color: #f22121;
+  min-width: 30px;
+}
+
+.producto-nombre-detalle {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.producto-subtotal {
+  font-weight: 600;
+  color: #000;
+  font-size: 0.9rem;
+}
+
+/* Footer */
+.compra-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.metodo-pago {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.estado-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.estado-badge.completada {
+  background: #d4edda;
+  color: #155724;
+}
+
+.estado-badge.pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.estado-badge.cancelada {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .compras-list {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .compras-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .total-periodo {
+    align-items: flex-start;
+  }
+
+  .compras-list {
+    grid-template-columns: 1fr;
+  }
+}

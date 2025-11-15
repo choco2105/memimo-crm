@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { 
   obtenerClientes, 
   obtenerProductos, 
-  obtenerEstadisticasDashboard 
+  obtenerEstadisticasDashboard,
+  obtenerComprasRecientes
 } from '../../lib/supabase'
 import StatsCard from './StatsCard'
+import VentaModal from '../compras/VentaModal'
 import './Dashboard.css'
 
 const Dashboard = () => {
@@ -19,6 +21,8 @@ const Dashboard = () => {
   })
   const [clientesRecientes, setClientesRecientes] = useState([])
   const [productosTop, setProductosTop] = useState([])
+  const [comprasRecientes, setComprasRecientes] = useState([])
+  const [isVentaModalOpen, setIsVentaModalOpen] = useState(false)
 
   useEffect(() => {
     cargarDatos()
@@ -35,10 +39,14 @@ const Dashboard = () => {
       const clientes = await obtenerClientes()
       setClientesRecientes(clientes.slice(0, 5))
 
+      // Obtener compras recientes
+      const compras = await obtenerComprasRecientes(7)
+      setComprasRecientes(compras)
+
       // Obtener productos
       const productos = await obtenerProductos()
       
-      // Simular productos más vendidos (ordenar por nombre por ahora)
+      // Simular productos más vendidos (ordenar por precio por ahora)
       const topProductos = productos
         .sort((a, b) => b.precio - a.precio)
         .slice(0, 5)
@@ -49,12 +57,17 @@ const Dashboard = () => {
       
       setProductosTop(topProductos)
 
+      // Calcular estadísticas de compras
+      const totalVentasMes = compras.reduce((sum, c) => sum + parseFloat(c.total), 0)
+      const totalComprasMes = compras.length
+      const promedioTicket = totalComprasMes > 0 ? totalVentasMes / totalComprasMes : 0
+
       // Actualizar stats
       setStats({
         totalClientes: estadisticas.totalClientes,
-        totalVentasMes: parseFloat(estadisticas.totalVentasMes) || 0,
-        totalComprasMes: Math.floor(Math.random() * 150) + 50, // Simulado
-        promedioTicket: (parseFloat(estadisticas.totalVentasMes) / 30).toFixed(2) || 0,
+        totalVentasMes: totalVentasMes.toFixed(2),
+        totalComprasMes: totalComprasMes,
+        promedioTicket: promedioTicket.toFixed(2),
       })
 
       setLoading(false)
@@ -64,11 +77,9 @@ const Dashboard = () => {
     }
   }
 
-  // ACCIONES RÁPIDAS - Ahora funcionales
+  // ACCIONES RÁPIDAS - Todas funcionales
   const handleNuevaVenta = () => {
-    // Por ahora navega a clientes (puedes crear una página de ventas después)
-    navigate('/clientes')
-    alert('Módulo de Ventas próximamente. Por ahora puedes gestionar clientes.')
+    setIsVentaModalOpen(true)
   }
 
   const handleNuevoCliente = () => {
@@ -80,7 +91,7 @@ const Dashboard = () => {
   }
 
   const handleNuevaCampana = () => {
-    alert('Módulo de Campañas próximamente.')
+    navigate('/campanas')
   }
 
   if (loading) {
@@ -106,7 +117,7 @@ const Dashboard = () => {
         />
         <StatsCard
           title="Ventas del Mes"
-          value={`S/ ${stats.totalVentasMes.toLocaleString()}`}
+          value={`S/ ${parseFloat(stats.totalVentasMes).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           icon="💰"
           color="success"
           trend="up"
@@ -122,37 +133,68 @@ const Dashboard = () => {
         />
         <StatsCard
           title="Ticket Promedio"
-          value={`S/ ${stats.promedioTicket}`}
+          value={`S/ ${parseFloat(stats.promedioTicket).toFixed(2)}`}
           icon="📊"
           color="warning"
-          trend="down"
-          trendValue="-3%"
+          trend="up"
+          trendValue="+3%"
         />
       </div>
 
-      {/* Gráfico de Ventas */}
+      {/* Gráfico de Ventas (últimos 7 días) */}
       <div className="dashboard-section">
         <div className="section-card">
           <div className="section-header">
             <h2 className="section-title">📈 Ventas de los Últimos 7 Días</h2>
-            <button className="btn-outline">Ver más</button>
+            <button className="btn-outline" onClick={() => navigate('/reportes')}>
+              Ver reportes completos
+            </button>
           </div>
           <div className="chart-container">
             <div className="chart-placeholder">
               <div className="chart-bars">
-                {[65, 45, 80, 55, 90, 70, 85].map((height, index) => (
-                  <div key={index} className="chart-bar-wrapper">
-                    <div 
-                      className="chart-bar" 
-                      style={{ height: `${height}%` }}
-                    >
-                      <span className="chart-value">S/ {(height * 10).toFixed(0)}</span>
+                {comprasRecientes.length > 0 ? (
+                  // Agrupar compras por día y crear barras
+                  (() => {
+                    const ventasPorDia = {}
+                    comprasRecientes.forEach(compra => {
+                      const fecha = new Date(compra.fecha).toLocaleDateString('es-PE', { weekday: 'short' })
+                      ventasPorDia[fecha] = (ventasPorDia[fecha] || 0) + parseFloat(compra.total)
+                    })
+                    
+                    const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+                    const maxVenta = Math.max(...Object.values(ventasPorDia), 1)
+                    
+                    return dias.map((dia, index) => {
+                      const venta = ventasPorDia[dia] || 0
+                      const height = maxVenta > 0 ? (venta / maxVenta) * 100 : 20
+                      
+                      return (
+                        <div key={index} className="chart-bar-wrapper">
+                          <div 
+                            className="chart-bar" 
+                            style={{ height: `${Math.max(height, 20)}%` }}
+                          >
+                            <span className="chart-value">
+                              {venta > 0 ? `S/ ${venta.toFixed(0)}` : '-'}
+                            </span>
+                          </div>
+                          <span className="chart-label">{dia}</span>
+                        </div>
+                      )
+                    })
+                  })()
+                ) : (
+                  // Si no hay compras, mostrar barras vacías
+                  ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((dia, index) => (
+                    <div key={index} className="chart-bar-wrapper">
+                      <div className="chart-bar" style={{ height: '20%' }}>
+                        <span className="chart-value">-</span>
+                      </div>
+                      <span className="chart-label">{dia}</span>
                     </div>
-                    <span className="chart-label">
-                      {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][index]}
-                    </span>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -176,7 +218,7 @@ const Dashboard = () => {
                   <div className="product-rank">{index + 1}</div>
                   <div className="product-info">
                     <div className="product-name">{producto.nombre}</div>
-                    <div className="product-price">S/ {producto.precio}</div>
+                    <div className="product-price">S/ {parseFloat(producto.precio).toFixed(2)}</div>
                   </div>
                   <div className="product-sales">
                     <span className="sales-value">{producto.ventas}</span>
@@ -231,7 +273,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Acciones Rápidas - AHORA FUNCIONALES */}
+      {/* Acciones Rápidas - TODAS FUNCIONALES */}
       <div className="dashboard-actions">
         <h2 className="section-title">⚡ Acciones Rápidas</h2>
         <div className="actions-grid">
@@ -253,6 +295,13 @@ const Dashboard = () => {
           </button>
         </div>
       </div>
+
+      {/* Modal de Nueva Venta */}
+      <VentaModal
+        isOpen={isVentaModalOpen}
+        onClose={() => setIsVentaModalOpen(false)}
+        onSuccess={cargarDatos}
+      />
     </div>
   )
 }

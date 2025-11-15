@@ -3,6 +3,8 @@ import MainLayout from './components/layout/MainLayout'
 import Dashboard from './components/dashboard/Dashboard'
 import ClientesList from './components/clientes/ClientesList'
 import ProductosList from './components/productos/ProductosList'
+import ComprasList from './components/compras/ComprasList'
+import CampanasList from './components/campanas/CampanasList'
 import Reportes from './components/reportes/Reportes'
 import TestConexion from './components/TestConexion'
 import './App.css'
@@ -30,9 +32,19 @@ function App() {
           <Route index element={<ProductosList />} />
         </Route>
 
+        {/* Compras/Ventas */}
+        <Route path="/compras" element={<MainLayout title="Ventas" subtitle="Historial de ventas" />}>
+          <Route index element={<ComprasList />} />
+        </Route>
+
         {/* Reportes */}
         <Route path="/reportes" element={<MainLayout title="Reportes" subtitle="Análisis y estadísticas" />}>
           <Route index element={<Reportes />} />
+        </Route>
+
+        {/* Campañas */}
+        <Route path="/campanas" element={<MainLayout title="Campañas" subtitle="Marketing y promociones" />}>
+          <Route index element={<CampanasList />} />
         </Route>
 
         {/* Test de conexión */}

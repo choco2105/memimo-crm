@@ -1,0 +1,324 @@
+/* ============================================
+   CAMPAÑAS PAGE - MEMIMO CRM
+   ============================================ */
+
+.campanas-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.campanas-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+/* ============================================
+   FILTROS
+   ============================================ */
+
+.campanas-filtros {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filtro-estado {
+  padding: 0.75rem 1.5rem;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.filtro-estado:hover {
+  background: #fff0f0;
+  color: #f22121;
+}
+
+.filtro-estado.active {
+  background: #f22121;
+  color: white;
+  border-color: #f22121;
+}
+
+/* ============================================
+   GRID DE CAMPAÑAS
+   ============================================ */
+
+.campanas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.campana-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border-left: 4px solid #f22121;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.campana-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Header de la campaña */
+.campana-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.campana-canal-badge {
+  padding: 0.4rem 0.8rem;
+  background: #f0f0f0;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: capitalize;
+}
+
+.campana-estado-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+}
+
+/* Contenido */
+.campana-nombre {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.campana-descripcion {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.campana-descuento {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #fff0f0;
+  border-radius: 8px;
+  border: 2px solid #f22121;
+}
+
+.descuento-icono {
+  font-size: 1.5rem;
+}
+
+.descuento-texto {
+  font-weight: 600;
+  color: #f22121;
+}
+
+/* Fechas */
+.campana-fechas {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.fecha-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fecha-label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.fecha-valor {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Acciones */
+.campana-acciones {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.btn-accion-campana {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-accion-campana.ver:hover {
+  border-color: #17a2b8;
+  background: #e7f7fa;
+  color: #17a2b8;
+}
+
+.btn-accion-campana.editar:hover {
+  border-color: #ffc107;
+  background: #fff8e1;
+  color: #ffc107;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .campanas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .campana-fechas {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+/* ============================================
+   ACCIONES MEJORADAS
+   ============================================ */
+
+.campana-acciones {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.btn-accion-campana {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-accion-campana.ver:hover {
+  border-color: #17a2b8;
+  background: #e7f7fa;
+  transform: translateY(-2px);
+}
+
+.btn-accion-campana.editar:hover {
+  border-color: #ffc107;
+  background: #fff8e1;
+  transform: translateY(-2px);
+}
+
+.btn-accion-campana.eliminar:hover {
+  border-color: #dc3545;
+  background: #f8d7da;
+  transform: translateY(-2px);
+}
+
+/* Dropdown de estado */
+.dropdown-estado {
+  position: relative;
+  flex: 1;
+}
+
+.btn-accion-campana.estado:hover {
+  border-color: #6c757d;
+  background: #e9ecef;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.dropdown-estado:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-menu button:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu button:hover {
+  background: #f5f5f5;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .campana-acciones {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .btn-accion-campana {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+}
