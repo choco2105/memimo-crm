@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { obtenerClientes, crearCampanaCompleta, actualizarCampana, asignarYEnviarCampana } from '../../lib/supabase'
 import { enviarCampanaTelegram, verificarBotTelegram } from '../../lib/telegram'
+import { enviarCampanaEmail, verificarEmailConfig } from '../../lib/email'
 import './CrearCampanaModal.css'
 
 const CrearCampanaModal = ({ isOpen, onClose, campana = null, modoEdicion = false, onSuccess }) => {
@@ -8,6 +9,7 @@ const CrearCampanaModal = ({ isOpen, onClose, campana = null, modoEdicion = fals
   const [loading, setLoading] = useState(false)
   const [clientes, setClientes] = useState([])
   const [botTelegram, setBotTelegram] = useState({ conectado: false })
+  const [emailConfig, setEmailConfig] = useState({ conectado: false })
 
   // Datos del formulario
   const [formData, setFormData] = useState({
@@ -31,6 +33,7 @@ const CrearCampanaModal = ({ isOpen, onClose, campana = null, modoEdicion = fals
     if (isOpen) {
       cargarDatos()
       verificarTelegram()
+      verificarEmail()
       
       // Si es modo edición, cargar datos de la campaña
       if (modoEdicion && campana) {
@@ -59,6 +62,11 @@ const CrearCampanaModal = ({ isOpen, onClose, campana = null, modoEdicion = fals
   const verificarTelegram = async () => {
     const resultado = await verificarBotTelegram()
     setBotTelegram(resultado)
+  }
+
+  const verificarEmail = async () => {
+    const resultado = await verificarEmailConfig()
+    setEmailConfig(resultado)
   }
 
   const handleChange = (e) => {
@@ -126,6 +134,7 @@ ${formData.descripcion}
 
         const mensaje = mensajePersonalizado || generarMensajeSugerido()
 
+        // TELEGRAM
         if (formData.canal === 'telegram' && botTelegram.conectado) {
           const resultados = await enviarCampanaTelegram(
             clientesAEnviar,
@@ -138,8 +147,28 @@ ${formData.descripcion}
                 `Fallidos: ${resultados.fallidos}`)
 
           await asignarYEnviarCampana(campanaFinal.id, clientesSeleccionados)
+        }
+        // EMAIL
+        else if (formData.canal === 'email' && emailConfig.conectado) {
+          // Asunto del email
+          const asunto = `🍦 ${formData.nombre} - Heladería Memimo`
+          
+          const resultados = await enviarCampanaEmail(
+            clientesAEnviar,
+            asunto,
+            mensaje,
+            formData.nombre
+          )
 
-        } else {
+          alert(`✅ Campaña enviada por Email!\n\n` +
+                `Exitosos: ${resultados.exitosos}\n` +
+                `Fallidos: ${resultados.fallidos}\n\n` +
+                `Clientes sin email: ${resultados.detalles.filter(d => d.error === 'Sin email registrado').length}`)
+
+          await asignarYEnviarCampana(campanaFinal.id, clientesSeleccionados)
+        }
+        // DEMO (WhatsApp, Instagram, etc)
+        else {
           const simulacion = clientesAEnviar.map((cliente, index) => ({
             id: index,
             cliente: `${cliente.nombres} ${cliente.apellidos}`,
@@ -153,7 +182,7 @@ ${formData.descripcion}
 
           alert(`✅ Campaña simulada enviada por ${formData.canal}!\n\n` +
                 `${clientesAEnviar.length} clientes alcanzados\n\n` +
-                `(Esto es una demo visual. Para envíos reales, usa Telegram)`)
+                `(Esto es una demo visual. Para envíos reales, usa Telegram o Email)`)
 
           await asignarYEnviarCampana(campanaFinal.id, clientesSeleccionados)
         }
@@ -328,12 +357,27 @@ ${formData.descripcion}
                   )}
                 </div>
 
+                {/* EMAIL - REAL */}
+                <div
+                  className={`canal-card ${formData.canal === 'email' ? 'selected' : ''} ${emailConfig.conectado ? 'disponible' : 'no-disponible'}`}
+                  onClick={() => setFormData(prev => ({ ...prev, canal: 'email' }))}
+                >
+                  <div className="canal-icon">�</div>
+                  <h4>Email</h4>
+                  <p>Correos personalizados</p>
+                  {emailConfig.conectado ? (
+                    <span className="canal-badge success">✓ Conectado</span>
+                  ) : (
+                    <span className="canal-badge error">✗ No configurado</span>
+                  )}
+                </div>
+
                 {/* WhatsApp - DEMO */}
                 <div
                   className={`canal-card ${formData.canal === 'whatsapp' ? 'selected' : ''} demo`}
                   onClick={() => setFormData(prev => ({ ...prev, canal: 'whatsapp' }))}
                 >
-                  <div className="canal-icon">💬</div>
+                  <div className="canal-icon">�</div>
                   <h4>WhatsApp</h4>
                   <p>Simulación de envío masivo</p>
                   <span className="canal-badge demo">🎨 Demo</span>
@@ -344,24 +388,28 @@ ${formData.descripcion}
                   className={`canal-card ${formData.canal === 'instagram' ? 'selected' : ''} demo`}
                   onClick={() => setFormData(prev => ({ ...prev, canal: 'instagram' }))}
                 >
-                  <div className="canal-icon">📷</div>
+                  <div className="canal-icon">�</div>
                   <h4>Instagram</h4>
                   <p>Publicación en Stories/Feed</p>
                   <span className="canal-badge demo">🎨 Demo</span>
                 </div>
-
-                {/* Facebook - DEMO */}
-                <div
-                  className={`canal-card ${formData.canal === 'facebook' ? 'selected' : ''} demo`}
-                  onClick={() => setFormData(prev => ({ ...prev, canal: 'facebook' }))}
-                >
-                  <div className="canal-icon">👥</div>
-                  <h4>Facebook</h4>
-                  <p>Publicación en página</p>
-                  <span className="canal-badge demo">🎨 Demo</span>
-                </div>
               </div>
 
+              {/* Alerta Email */}
+              {!emailConfig.conectado && formData.canal === 'email' && (
+                <div className="alerta-telegram">
+                  <h4>⚠️ Configuración de Email requerida</h4>
+                  <p>Para enviar correos reales, necesitas:</p>
+                  <ol>
+                    <li>Crear una cuenta en <a href="https://resend.com" target="_blank">Resend.com</a></li>
+                    <li>Obtener tu API Key</li>
+                    <li>Agregar en .env: <code>VITE_RESEND_API_KEY</code></li>
+                    <li>Agregar en .env: <code>VITE_EMAIL_FROM</code></li>
+                  </ol>
+                </div>
+              )}
+
+              {/* Alerta Telegram */}
               {!botTelegram.conectado && formData.canal === 'telegram' && (
                 <div className="alerta-telegram">
                   <h4>⚠️ Configuración de Telegram requerida</h4>
