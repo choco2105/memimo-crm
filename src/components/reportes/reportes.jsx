@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { obtenerEstadisticasDashboard, obtenerProductos, supabase } from '../../lib/supabase'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
-import './Reportes.css'
+import './reportes.css'
 
 const Reportes = () => {
   const [loading, setLoading] = useState(true)
