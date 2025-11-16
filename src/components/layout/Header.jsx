@@ -1,8 +1,13 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import './Header.css'
 
 const Header = ({ title, subtitle }) => {
+  const navigate = useNavigate()
+  const { user, isAdmin, logout } = useAuth()
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
 
   const notifications = [
     { id: 1, type: 'success', message: 'Nueva compra registrada', time: 'Hace 5 min' },
@@ -16,6 +21,13 @@ const Header = ({ title, subtitle }) => {
     month: 'long',
     day: 'numeric'
   })
+
+  const handleLogout = async () => {
+    if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+      await logout()
+      navigate('/login')
+    }
+  }
 
   return (
     <header className="header">
@@ -79,13 +91,72 @@ const Header = ({ title, subtitle }) => {
           )}
         </div>
 
-        {/* Usuario */}
-        <div className="header-user">
-          <div className="user-avatar">👤</div>
-          <div className="user-info">
-            <div className="user-name">Admin</div>
-            <div className="user-role">Administrador</div>
+        {/* Usuario con Dropdown */}
+        <div className="header-user-container">
+          <div 
+            className="header-user"
+            onClick={() => setShowUserMenu(!showUserMenu)}
+          >
+            <div className="user-avatar">
+              {user?.nombre?.charAt(0)}{user?.apellido?.charAt(0)}
+            </div>
+            <div className="user-info">
+              <div className="user-name">
+                {user?.nombre} {user?.apellido}
+                {isAdmin && <span className="admin-badge-header">👑</span>}
+              </div>
+              <div className="user-role">{user?.rol}</div>
+            </div>
+            <span className="dropdown-arrow">{showUserMenu ? '▲' : '▼'}</span>
           </div>
+
+          {/* Dropdown Menu */}
+          {showUserMenu && (
+            <div className="user-dropdown">
+              <div className="user-dropdown-header">
+                <div className="user-avatar-large">
+                  {user?.nombre?.charAt(0)}{user?.apellido?.charAt(0)}
+                </div>
+                <div className="user-dropdown-info">
+                  <div className="user-dropdown-name">
+                    {user?.nombre} {user?.apellido}
+                  </div>
+                  <div className="user-dropdown-email">{user?.email}</div>
+                  <div className="user-dropdown-role">
+                    {isAdmin && '👑 '}
+                    {user?.rol}
+                  </div>
+                </div>
+              </div>
+
+              <div className="user-dropdown-divider"></div>
+
+              <div className="user-dropdown-menu">
+                {isAdmin && (
+                  <button
+                    className="user-dropdown-item"
+                    onClick={() => {
+                      setShowUserMenu(false)
+                      navigate('/usuarios')
+                    }}
+                  >
+                    <span className="dropdown-item-icon">👥</span>
+                    <span>Gestión de Usuarios</span>
+                  </button>
+                )}
+                <button
+                  className="user-dropdown-item danger"
+                  onClick={() => {
+                    setShowUserMenu(false)
+                    handleLogout()
+                  }}
+                >
+                  <span className="dropdown-item-icon">🚪</span>
+                  <span>Cerrar Sesión</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

@@ -152,6 +152,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   animation: slideDown 0.3s ease;
+  z-index: 1000;
 }
 
 @keyframes slideDown {
@@ -263,21 +264,27 @@
 }
 
 /* ============================================
-   USUARIO
+   USUARIO CON DROPDOWN
    ============================================ */
+
+.header-user-container {
+  position: relative;
+}
 
 .header-user {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
+  border: 2px solid transparent;
 }
 
 .header-user:hover {
   background: #f5f5f5;
+  border-color: #f0f0f0;
 }
 
 .user-avatar {
@@ -288,8 +295,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
   flex-shrink: 0;
+  text-transform: uppercase;
 }
 
 .user-info {
@@ -303,11 +313,142 @@
   font-size: 0.9rem;
   color: #000;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-badge-header {
+  font-size: 0.85rem;
 }
 
 .user-role {
   font-size: 0.75rem;
   color: #666;
+  text-transform: capitalize;
+}
+
+.dropdown-arrow {
+  font-size: 0.7rem;
+  color: #666;
+  margin-left: 0.25rem;
+}
+
+/* ============================================
+   USER DROPDOWN MENU
+   ============================================ */
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 300px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+  z-index: 1000;
+}
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #fff0f0, #ffffff);
+}
+
+.user-avatar-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f22121, #ff4444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(242, 33, 33, 0.3);
+}
+
+.user-dropdown-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+}
+
+.user-dropdown-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-dropdown-email {
+  font-size: 0.85rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-dropdown-role {
+  font-size: 0.8rem;
+  color: #f22121;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-dropdown-divider {
+  height: 2px;
+  background: #f0f0f0;
+}
+
+.user-dropdown-menu {
+  padding: 0.5rem;
+}
+
+.user-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  text-align: left;
+}
+
+.user-dropdown-item:hover {
+  background: #f5f5f5;
+  color: #000;
+}
+
+.user-dropdown-item.danger {
+  color: #dc3545;
+}
+
+.user-dropdown-item.danger:hover {
+  background: #fff0f0;
+  color: #dc3545;
+}
+
+.dropdown-item-icon {
+  font-size: 1.2rem;
 }
 
 /* ============================================
@@ -353,7 +494,12 @@
     display: none;
   }
 
-  .notification-dropdown {
+  .dropdown-arrow {
+    display: none;
+  }
+
+  .notification-dropdown,
+  .user-dropdown {
     width: 280px;
   }
 }
