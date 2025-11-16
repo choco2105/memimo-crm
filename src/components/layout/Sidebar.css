@@ -188,6 +188,9 @@
 .sidebar-footer {
   padding: 1rem;
   border-top: 2px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .sidebar-user {
@@ -207,8 +210,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
   flex-shrink: 0;
+  text-transform: uppercase;
 }
 
 .user-info {
@@ -216,6 +222,7 @@
   flex-direction: column;
   gap: 0.125rem;
   overflow: hidden;
+  flex: 1;
 }
 
 .user-name {
@@ -230,6 +237,61 @@
 .user-role {
   font-size: 0.75rem;
   color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.admin-badge {
+  font-size: 0.85rem;
+}
+
+/* ============================================
+   BOTÓN DE LOGOUT
+   ============================================ */
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  color: #666;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-logout:hover {
+  background: #f22121;
+  color: white;
+  border-color: #f22121;
+  transform: translateY(-2px);
+}
+
+.btn-logout-collapsed {
+  width: 100%;
+  padding: 0.75rem;
+  background: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-logout-collapsed:hover {
+  background: #f22121;
+  border-color: #f22121;
+  transform: scale(1.05);
 }
 
 .sidebar.collapsed .sidebar-footer {

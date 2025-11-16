@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import './Sidebar.css'
 
 const Sidebar = () => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { user, isAdmin, logout } = useAuth()
   const [collapsed, setCollapsed] = useState(false)
 
   const menuItems = [
@@ -43,13 +46,35 @@ const Sidebar = () => {
       icon: '📈',
       path: '/reportes',
     },
+    {
+      id: 'usuarios',
+      label: 'Usuarios',
+      icon: '👤',
+      path: '/usuarios',
+      adminOnly: true // Solo visible para admin
+    },
   ]
+
+  // Filtrar menú según rol
+  const menuItemsFiltrados = menuItems.filter(item => {
+    if (item.adminOnly) {
+      return isAdmin
+    }
+    return true
+  })
 
   const isActive = (path) => {
     if (path === '/') {
       return location.pathname === '/'
     }
     return location.pathname.startsWith(path)
+  }
+
+  const handleLogout = async () => {
+    if (window.confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+      await logout()
+      navigate('/login')
+    }
   }
 
   return (
@@ -77,7 +102,7 @@ const Sidebar = () => {
       {/* Navegación */}
       <nav className="sidebar-nav">
         <ul className="sidebar-menu">
-          {menuItems.map((item) => (
+          {menuItemsFiltrados.map((item) => (
             <li key={item.id}>
               <Link
                 to={item.path}
@@ -94,14 +119,37 @@ const Sidebar = () => {
 
       {/* Footer */}
       <div className="sidebar-footer">
-        {!collapsed && (
-          <div className="sidebar-user">
-            <div className="user-avatar">👤</div>
-            <div className="user-info">
-              <div className="user-name">Administrador</div>
-              <div className="user-role">Admin</div>
+        {!collapsed ? (
+          <>
+            <div className="sidebar-user">
+              <div className="user-avatar">
+                {user?.nombre?.charAt(0)}{user?.apellido?.charAt(0)}
+              </div>
+              <div className="user-info">
+                <div className="user-name">{user?.nombre} {user?.apellido}</div>
+                <div className="user-role">
+                  {isAdmin && <span className="admin-badge">👑 </span>}
+                  {user?.rol}
+                </div>
+              </div>
             </div>
-          </div>
+            <button 
+              className="btn-logout"
+              onClick={handleLogout}
+              title="Cerrar sesión"
+            >
+              <span>🚪</span>
+              <span>Cerrar Sesión</span>
+            </button>
+          </>
+        ) : (
+          <button 
+            className="btn-logout-collapsed"
+            onClick={handleLogout}
+            title="Cerrar sesión"
+          >
+            🚪
+          </button>
         )}
       </div>
     </aside>
