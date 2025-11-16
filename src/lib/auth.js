@@ -1,12 +1,10 @@
 // ============================================
 // AUTENTICACIÓN - MEMIMO CRM
-// Sistema completo de login con bcrypt y sesiones
+// Sistema completo de login con verificación en Supabase
 // ============================================
 
 import { supabase } from './supabase'
-import bcrypt from 'bcryptjs'
 
-const SALT_ROUNDS = 10
 const SESSION_DURATION_HOURS = 24
 
 /**
@@ -30,62 +28,48 @@ const calcularExpiracion = () => {
  */
 export const login = async (email, password) => {
   try {
-    // 1. Buscar usuario por email
-    const { data: usuario, error: errorUsuario } = await supabase
-      .from('usuarios')
-      .select(`
-        *,
-        rol:roles(nombre)
-      `)
-      .eq('email', email)
-      .single()
+    // 1. Verificar credenciales usando función RPC de Supabase
+    const { data: resultadoLogin, error: errorLogin } = await supabase
+      .rpc('verificar_login', {
+        p_email: email,
+        p_password: password
+      })
 
-    if (errorUsuario || !usuario) {
+    if (errorLogin) {
+      console.error('Error en verificar_login:', errorLogin)
       return {
         success: false,
-        error: 'Usuario no encontrado',
-        code: 'AUTH_USER_NOT_FOUND'
+        error: 'Error al verificar credenciales',
+        code: 'AUTH_VERIFICATION_ERROR'
       }
     }
 
-    // 2. Verificar que el usuario esté activo
-    if (!usuario.activo) {
+    // 2. Verificar resultado
+    const resultado = resultadoLogin[0]
+
+    if (!resultado.success) {
       // Registrar intento fallido
-      await registrarIntentoLogin(email, false, 'Usuario inactivo')
+      await registrarIntentoLogin(email, false, resultado.error_message)
       
       return {
         success: false,
-        error: 'Usuario inactivo. Contacta al administrador.',
-        code: 'AUTH_USER_INACTIVE'
+        error: resultado.error_message,
+        code: 'AUTH_INVALID_CREDENTIALS'
       }
     }
 
-    // 3. Verificar password con bcrypt
-    const passwordValida = await bcrypt.compare(password, usuario.password_hash)
-
-    if (!passwordValida) {
-      // Registrar intento fallido
-      await registrarIntentoLogin(email, false, 'Contraseña incorrecta')
-      
-      return {
-        success: false,
-        error: 'Contraseña incorrecta',
-        code: 'AUTH_INVALID_PASSWORD'
-      }
-    }
-
-    // 4. Generar token de sesión
+    // 3. Generar token de sesión
     const token = generarToken()
     const expiraEn = calcularExpiracion()
 
-    // 5. Crear sesión en la base de datos
+    // 4. Crear sesión en la base de datos
     const { error: errorSesion } = await supabase
       .from('sesiones')
       .insert([{
-        usuario_id: usuario.id,
+        usuario_id: resultado.user_id,
         token: token,
         expira_en: expiraEn,
-        ip_address: 'N/A', // Frontend no tiene acceso a IP
+        ip_address: 'N/A',
         user_agent: navigator.userAgent
       }])
 
@@ -98,25 +82,25 @@ export const login = async (email, password) => {
       }
     }
 
-    // 6. Actualizar último acceso
+    // 5. Actualizar último acceso
     await supabase
       .from('usuarios')
       .update({ ultimo_acceso: new Date().toISOString() })
-      .eq('id', usuario.id)
+      .eq('id', resultado.user_id)
 
-    // 7. Registrar intento exitoso
+    // 6. Registrar intento exitoso
     await registrarIntentoLogin(email, true, 'Login exitoso')
 
-    // 8. Retornar datos del usuario y token
+    // 7. Retornar datos del usuario y token
     return {
       success: true,
       user: {
-        id: usuario.id,
-        email: usuario.email,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        rol: usuario.rol.nombre,
-        activo: usuario.activo
+        id: resultado.user_id,
+        email: resultado.email,
+        nombre: resultado.nombre,
+        apellido: resultado.apellido,
+        rol: resultado.rol_nombre,
+        activo: resultado.activo
       },
       token: token,
       expira: expiraEn
@@ -163,8 +147,22 @@ export const register = async (userData, adminId) => {
       }
     }
 
-    // 3. Encriptar password
-    const passwordHash = await bcrypt.hash(userData.password, SALT_ROUNDS)
+    // 3. Encriptar password usando función RPC
+    const { data: hashData, error: hashError } = await supabase
+      .rpc('encriptar_password', {
+        p_password: userData.password
+      })
+
+    if (hashError || !hashData) {
+      console.error('Error al encriptar password:', hashError)
+      return {
+        success: false,
+        error: 'Error al procesar contraseña',
+        code: 'AUTH_HASH_ERROR'
+      }
+    }
+
+    const passwordHash = hashData[0].hash
 
     // 4. Crear usuario
     const { data: nuevoUsuario, error: errorCrear } = await supabase
